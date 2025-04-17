@@ -1,28 +1,29 @@
-# Use imagem oficial do Node.js
+# Use the official Node.js image as the base
 FROM node:18
 
-# Define diretório de trabalho dentro do container
+# Set the working directory inside the container
 WORKDIR /app
 
-# Copia arquivos de dependência
+# Copy dependency definition files
 COPY package*.json ./
 
-# Instala dependências
+# Install dependencies
 RUN npm install
 
-# Instala o NestJS CLI globalmente (opcional)
+# Install NestJS CLI globally (optional)
 RUN npm install -g @nestjs/cli
 
-# Copia todos os arquivos do projeto (inclusive tsconfig.json, src/, etc.)
+# Copy all project files (including tsconfig.json, src/, etc.)
 # Localhost ***********
 COPY . .
 # Dockerfile ***********
 # COPY ./src/data/phone_data.csv ./
-# Gera os arquivos compilados TypeScript em /dist
+
+# Build the TypeScript files into /dist
 RUN npm run build
 
-# Expõe a porta da aplicação
+# Expose the application port
 EXPOSE 3000
 
-# Comando de start para produção
+# Production start command
 CMD ["npm", "run", "start:prod"]
