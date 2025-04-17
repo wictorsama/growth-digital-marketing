@@ -1,0 +1,29 @@
+{
+  "info": {
+    "name": "NodeJS Phone Processor API",
+    "_postman_id": "b1e2c3d4-5678-1234-9abc-def012345678",
+    "description": "Collection for testing the /phone/process endpoint",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Process Phone Data",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:3000/phone/process",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["phone", "process"]
+        }
+      }
+    }
+  ]
+}

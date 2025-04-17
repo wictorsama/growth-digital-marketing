@@ -1,0 +1,73 @@
+services:
+  mongodb:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    environment:
+      - MONGO_INITDB_DATABASE=states-db
+    networks:
+      - app-network
+
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+    networks:
+      - app-network
+
+  state-aggregator-service:
+    build:
+      context: ./state-aggregator-service
+      dockerfile: Dockerfile
+    ports:
+      - "3001:3000"  # Host port 3001 mapped to container port 3000
+    environment:
+      - MONGODB_URI=mongodb://mongodb:27017/states-db
+      - REDIS_HOST=redis
+    depends_on:
+      - mongodb
+      - redis
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1G
+    networks:
+      - app-network
+
+  state-csv-batch-processor:
+    build:
+      context: ./state-csv-batch-processor
+      dockerfile: Dockerfile
+    ports:
+      - "3002:3000"  # Host port 3002 mapped to container port 3000
+    environment:
+      - API_URL=http://state-aggregator-service:3000
+    depends_on:
+      - state-aggregator-service
+    healthcheck:
+      test: ["CMD", "node", "./healthcheck.js"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 512M
+    networks:
+      - app-network
+
+volumes:
+  mongodb_data:
+
+networks:
+  app-network:
+    driver: bridge
