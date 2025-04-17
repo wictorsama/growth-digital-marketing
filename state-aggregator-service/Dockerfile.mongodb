@@ -1,0 +1,4 @@
+FROM mongo:latest
+
+ENV MONGO_INITDB_DATABASE=states-db
+EXPOSE 27017
